@@ -13,12 +13,12 @@ The download process of BitTorrent can be roughly divided into 4 steps: **1.** P
 
 In addition, in the BitTorrent protocol, each host acts as both server and client, so except for the download process, a host should be able to handle the communication with other peers. For example, Handshake, Request,ect. 
 
-Another critical piece of BitTorrent is concurrent download/upload, I will implement this feature in my project as well.
+Another critical piece of BitTorrent is concurrent download/upload. The idea is that, while you're downloading a file, you're also helping to upload it to others who need it. And everyone will be doing the same, so it's one of the reasons why it can be so fast. I will implement this feature in my project as well.
 
 ## Milestones
 
-- **May 5 - Parse .torrent file** Use Bencode to parse the .torrent file to get information such as "announce", "info", "length", and "pieces".  
-- **May 8 - handshake and bitfield** This includes "client" sending handshake messages, "server" handling handshake messages and sending bitfields.
-- **May 12 - request and pieces** This includes "client" sending a request to the peers for downloading a certain piece and storing it into the file system. The "server" peers will be able to send the "piece" reponse.
+- **May 5 - Connect to the peers** First, Use Bencode to parse the .torrent file to get information such as "announce", "info", "length", and "pieces". Second, Connect to Tracker and ask the information of peers, then parse the response from Tracker and get the ip and port of each peer. Last, connect to each peer.  
+- **May 8 - Handshake and bitfield** This includes "client" sending handshake messages, "server" handling handshake messages and sending bitfields.
+- **May 12 - Request and pieces** This includes "client" sending a request to the peers for downloading a certain piece and storing it into the file system. The "server" peers will be able to send the "piece" reponse.
 - **May 15 - concurrent download/upload** a host should be able to download and upload concurrently.
 - **May 17 - Integration Test** Test files can be correctly shared between VMs by using the BitTorrent protocol.
