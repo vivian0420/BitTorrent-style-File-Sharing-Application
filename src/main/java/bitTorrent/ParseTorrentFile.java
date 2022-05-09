@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import static bitTorrent.ConnectToPeers.connectToPeers;
 public class ParseTorrentFile {
 
     private static final Logger LOGGER = LogManager.getLogger(ParseTorrentFile.class.getName());
+    public static final List<byte[]> eachPiece = new ArrayList<>();
+    public static Map<String, BEncodedValue> info;
 
     /* bitTorrent bencode format tool: https://www.nayuki.io/page/bittorrent-bencode-format-tools */
     /* https://github.com/adaxi/Bencode */
@@ -39,29 +42,25 @@ public class ParseTorrentFile {
                 announces.add(announce);
                 LOGGER.info("Announce: " + announce);
             }
-            for (BEncodedValue b: announceList) {
+            for (BEncodedValue b : announceList) {
                 String announceString = b.getList().get(0).getString();
                 if (announceString.startsWith("http")) {
                     announces.add(announceString);
                     LOGGER.info("Announce: " + announceString);
                 }
             }
-            Map<String, BEncodedValue> info = document.get("info").getMap();
+            info = document.get("info").getMap();
             String name = info.get("name").getString();
             Long length = info.get("length").getLong();
             int pieceLength = info.get("piece length").getInt();
-            byte [] pieces = info.get("pieces").getBytes();
-            List<byte[]> eachPiece = new ArrayList<>();
+            byte[] pieces = info.get("pieces").getBytes();
             DataInputStream piecesIn = new DataInputStream(new BufferedInputStream(new ByteArrayInputStream(pieces)));
             while (piecesIn.available() > 0) {
                 eachPiece.add(piecesIn.readNBytes(20));
             }
-            connectToPeers(info, length, announces);
+            //connectToPeers(info, length, announces);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-    public static void main(String[] args) {
-        getTorrentData();
     }
 }

@@ -23,6 +23,7 @@ import java.util.UUID;
 public class TalkToTracker {
 
     private static final Logger LOGGER = LogManager.getLogger(TalkToTracker.class.getName());
+    final static String peerId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
 
     public static String getInfoHash(Map<String, BEncodedValue> info) {
         MessageDigest hash;
@@ -43,7 +44,7 @@ public class TalkToTracker {
     /* https://wiki.theory.org/BitTorrentSpecification#Info_in_Multiple_File_Mode */
     public static List<URI> getURL (Map<String, BEncodedValue> info, Long length, List<String> announces) {
         String infoHash = getInfoHash(info);
-        String peerId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+        //String peerId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
         String port = String.valueOf(6881);
         String left = String.valueOf(length);
         String downloaded = String.valueOf(0L);
