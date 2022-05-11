@@ -19,7 +19,7 @@ public class HandleRequest {
 
     private static final Logger LOGGER = LogManager.getLogger(HandleRequest.class.getName());
 
-    public static void handleRequest(BitSet iHave, byte[] hashValue, Socket socket, Map<String, BEncodedValue> info, String peerId, List<byte[]> eachPiece) {
+    public static void handleRequest(BitSet iHave, byte[] hashValue, Socket socket, Map<String, BEncodedValue> info, String peerId, int port) {
         try {
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -65,30 +65,32 @@ public class HandleRequest {
                 int id = in.read();
 
                 if(id == 6) {
-                    LOGGER.info("Received request.");
+                    //LOGGER.info("Received request.");
                     int index = in.readInt();
-                    LOGGER.info("Index = " + index);
+                    //LOGGER.info("Index = " + index);
                     int begin = in.readInt();
-                    LOGGER.info("Begin = " + begin);
+                    //LOGGER.info("Begin = " + begin);
                     int length = in.readInt();
 
-                    try(FileInputStream inStream = new FileInputStream(Path.of("/Users/vivianzhang/(COMIC1☆20) [23.4ド (イチリ)] ボクの理想の異世界生活10 (オリジナル) [DL版].zip").toFile())) {
-                        inStream.skipNBytes(((long) index * (info.get("piece length").getInt())) + begin);
-                        byte[] block = inStream.readNBytes(length);
+                    try(FileInputStream inStream = new FileInputStream(Path.of("target", String.valueOf(port), info.get("name").getString()).toFile())) {
+                        if (iHave.get(index)) {
+                            inStream.skipNBytes(((long) index * (info.get("piece length").getInt())) + begin);
+                            byte[] block = inStream.readNBytes(length);
 
-                        //piece: <len=0009+X><id=7><index><begin><block>
-                        out.writeInt(9 + length);
-                        out.write(7);
-                        out.writeInt(index);
-                        out.writeInt(begin);
-                        out.write(block);
-                        out.flush();
-                        LOGGER.info("Send piece.");
+                            //piece: <len=0009+X><id=7><index><begin><block>
+                            out.writeInt(9 + length);
+                            out.write(7);
+                            out.writeInt(index);
+                            out.writeInt(begin);
+                            out.write(block);
+                            out.flush();
+                            LOGGER.info("Send piece.");
+                        }
                     }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("Broken pipe");
         }
     }
 }

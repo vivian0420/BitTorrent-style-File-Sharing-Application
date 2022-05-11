@@ -24,14 +24,20 @@ import java.util.concurrent.TimeoutException;
 public class SendRequest {
 
     private static final Logger LOGGER = LogManager.getLogger(SendRequest.class.getName());
+
+
     public static void sendRequest(BitSet iHave, Map<String, BitSet> peersHave, Map<String, Socket> peersSocket,
-                                   Map<String, BEncodedValue> info, List<byte[]> eachPiece) {
+                                   Map<String, BEncodedValue> info, List<byte[]> eachPiece, String mode) {
         ExecutorService executorServiceDoRequest = Executors.newFixedThreadPool(30);
         //  do request
         Timer timer = new Timer("Timer");
         TimerTask task = new TimerTask() {
+
             public void run() {
-                LOGGER.info("peerHave = " + peersHave.size());
+                if (BitTorrent.timerCancel) {
+                    timer.cancel();
+                }
+                LOGGER.info("peersHave = " + peersHave.size());
                 for (Map.Entry<String, BitSet> bitSetEntry : peersHave.entrySet()) {
                     Future<?> submit = executorServiceDoRequest.submit(() -> {
                         try {
@@ -71,16 +77,18 @@ public class SendRequest {
                             LOGGER.info("Broken pipe");
                         }
                     });
+
                     try {
-                        submit.get(6000, TimeUnit.MILLISECONDS);
+                        submit.get(10000, TimeUnit.MILLISECONDS);
                     } catch (InterruptedException | ExecutionException | TimeoutException e) {
                         submit.cancel(true);                 // Give up this thread if haven't received any data in 6s
-                        peersHave.remove(bitSetEntry.getKey());
-                        peersSocket.remove(bitSetEntry.getKey());
+                        //peersHave.remove(bitSetEntry.getKey());
+                        //peersSocket.remove(bitSetEntry.getKey());
                     }
+
                 }
             }
         };
-        timer.scheduleAtFixedRate(task, 0, 1000);
+        timer.scheduleAtFixedRate(task, 2000, 1000);
     }
 }

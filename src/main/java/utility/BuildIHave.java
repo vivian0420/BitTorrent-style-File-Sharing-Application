@@ -15,10 +15,10 @@ import java.util.Map;
 
 public class BuildIHave {
 
-    public static void buildIHave(Map<String, BEncodedValue> info, List<byte[]> eachPiece, BitSet iHave) {
+    public static void buildIHave(Map<String, BEncodedValue> info, List<byte[]> eachPiece, BitSet iHave, int port) {
 
         // build iHave to support "resume download" and "send bitfield".
-        try (DataInputStream in = new DataInputStream(new FileInputStream(Path.of("target", info.get("name").getString()).toFile()))) {
+        try (DataInputStream in = new DataInputStream(new FileInputStream(Path.of("target", String.valueOf(port), info.get("name").getString()).toFile()))) {
             for (int i = 0; i < eachPiece.size(); i++) {
                 int pieceLength = info.get("piece length").getInt();
                 if (in.available() > pieceLength) {

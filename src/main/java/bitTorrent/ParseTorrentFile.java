@@ -21,11 +21,11 @@ public class ParseTorrentFile {
 
     private static final Logger LOGGER = LogManager.getLogger(ParseTorrentFile.class.getName());
 
-    public static Map<String, BEncodedValue> parseTorrentFile(List<byte[]> eachPiece, List<String> announces) {
+    public static Map<String, BEncodedValue> parseTorrentFile(List<byte[]> eachPiece, List<String> announces, String torrentFilePath) {
 
         //Parse torrent file
-        File torrentFile = Path.of("/Users/vivianzhang/Downloads/[SubsPlease] Yuusha, Yamemasu - 05 (720p) [5D2E9073].mkv.torrent").toFile();
-        FileInputStream inputStream = null;
+        File torrentFile = Path.of(torrentFilePath).toFile();
+        FileInputStream inputStream;
         Map<String, BEncodedValue> info = null;
         try {
             inputStream = new FileInputStream(torrentFile);

@@ -35,7 +35,8 @@ public class ConnectToPeer {
     private static final Logger LOGGER = LogManager.getLogger(ConnectToPeer.class.getName());
 
     public static void connectToPeers(Map<String, Socket> peersSocket, Map<Integer, byte[]> pieceReceived, Map<String, BitSet> peersHave,
-                                      Map<String, BEncodedValue> info, List<byte[]> eachPiece, List<String> announces) {
+                                      Map<String, BEncodedValue> info, List<byte[]> eachPiece, List<String> announces, String mode,
+                                      String hostName, int port) {
 
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -52,13 +53,17 @@ public class ConnectToPeer {
                     return;
                 }
                 List<byte[]> bodies = connectToTracker(uriList);
-                List<InetSocketAddress> addresses = getInetSocketAddress(bodies);
+                List<InetSocketAddress> addresses = getInetSocketAddress(bodies, mode);
+                if (mode.equals("local")) {
+                    addresses.add(new InetSocketAddress(hostName, port));
+                }
                 for (InetSocketAddress address : addresses) {
                     executorService.execute(() -> {
                         try {
+                            LOGGER.info("Try to Connect peer");
                             Socket socket = new Socket();
                             socket.connect(address, 5000);
-                            LOGGER.info("Connect succeed");
+                            //LOGGER.info("Connect succeed");
 
                             DataInputStream peerMessage = new DataInputStream(socket.getInputStream());
 
@@ -158,16 +163,18 @@ public class ConnectToPeer {
     }
 
 
-    private static List<InetSocketAddress> getInetSocketAddress(List<byte[]> bodies) {
+    private static List<InetSocketAddress> getInetSocketAddress(List<byte[]> bodies, String mode) {
         List<InetSocketAddress> addresses = new ArrayList<>();
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             for (byte[] body : bodies) {
                 Map<String, BEncodedValue> bodyMap = new BDecoder(new ByteArrayInputStream(body)).decodeMap().getMap();
                 byte[] peers = bodyMap.get("peers").getBytes();
-                out.write(peers);
+                if (mode.equals("online")) {
+                    out.write(peers);
+                }
             }
-            out.write(new byte[]{127, 0, 0, 1, 0x1a, (byte) 0xe1});
+            //out.write(new byte[]{127, 0, 0, 1, 0x1a, (byte) 0xe1});
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
 
             while (in.available() > 0) {
@@ -177,6 +184,7 @@ public class ConnectToPeer {
                 int peerPort = (port1 << 8) + port2;
                 addresses.add(new InetSocketAddress(address, peerPort));
             }
+
         } catch (IOException e) {
             LOGGER.info("failed to get peers from tracker response");
         }

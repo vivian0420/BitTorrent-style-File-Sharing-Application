@@ -18,7 +18,8 @@ import java.util.TimerTask;
 public class DoChecksum {
 
     private static final Logger LOGGER = LogManager.getLogger(DoChecksum.class.getName());
-    public static void doChecksum(BitSet iHave, RandomAccessFile file, Map<String, BEncodedValue> info, Map<Integer, byte[]> pieceReceived, List<byte[]> eachPiece) {
+    public static void doChecksum(BitSet iHave, RandomAccessFile file, Map<String, BEncodedValue> info, Map<Integer,
+            byte[]> pieceReceived, List<byte[]> eachPiece) {
         Timer timer1 = new Timer("Timer");
         TimerTask task1 = new TimerTask() {
             public void run() {
@@ -30,14 +31,12 @@ public class DoChecksum {
                         md = MessageDigest.getInstance("SHA-1");
                         hash = md.digest(entry.getValue());
                         if (Arrays.equals(hash, eachPiece.get(entry.getKey()))) {
-
                             iHave.set(entry.getKey());
                             LOGGER.info("iHave.cardinality() = " + iHave.cardinality());
                             if (iHave.cardinality() == eachPiece.size()) {
                                 LOGGER.info("Check sum timer cancel.");
-                                System.exit(0);
                                 timer1.cancel();
-
+                                BitTorrent.timerCancel = true;
                             }
                             file.seek((long) entry.getKey() * info.get("piece length").getInt());
                             file.write(entry.getValue());
@@ -49,7 +48,7 @@ public class DoChecksum {
                 }
             }
         };
-        timer1.schedule(task1, 0, 1000);
+        timer1.schedule(task1, 2000, 1000);
     }
 
 }

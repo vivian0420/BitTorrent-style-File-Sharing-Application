@@ -43,7 +43,7 @@ public class StartServerSocket {
                     continue;
                 }
                 executorService.execute(() -> {
-                    HandleRequest.handleRequest(iHave, hashValue, socket, info, peerId, eachPiece);
+                    HandleRequest.handleRequest(iHave, hashValue, socket, info, peerId, port);
                 });
             }
         }).start();
