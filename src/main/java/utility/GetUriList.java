@@ -1,4 +1,4 @@
-package bitTorrent;
+package utility;
 
 import be.adaxisoft.bencode.BEncodedValue;
 import be.adaxisoft.bencode.InvalidBEncodingException;
@@ -14,7 +14,7 @@ import static utility.GetHashValue.getHashValue;
 
 public class GetUriList {
 
-    static List<URI> getUriList(Map<String, BEncodedValue> info, String peerId, List<String> announces) throws InvalidBEncodingException {
+    public static List<URI> getUriList(Map<String, BEncodedValue> info, String peerId, List<String> announces) throws InvalidBEncodingException {
 
         byte[] hashValue = getHashValue(info);
         String infoHash = URLEncoder.encode(new String(hashValue, StandardCharsets.ISO_8859_1), StandardCharsets.ISO_8859_1);

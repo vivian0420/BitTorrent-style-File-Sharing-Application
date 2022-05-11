@@ -1,4 +1,4 @@
-package bitTorrent;
+package utility;
 
 import be.adaxisoft.bencode.BEncodedValue;
 
@@ -17,7 +17,7 @@ public class BuildIHave {
 
     public static void buildIHave(Map<String, BEncodedValue> info, List<byte[]> eachPiece, BitSet iHave) {
 
-        // build iHave to support "resume download."
+        // build iHave to support "resume download" and "send bitfield".
         try (DataInputStream in = new DataInputStream(new FileInputStream(Path.of("target", info.get("name").getString()).toFile()))) {
             for (int i = 0; i < eachPiece.size(); i++) {
                 int pieceLength = info.get("piece length").getInt();

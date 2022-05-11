@@ -24,8 +24,6 @@ public class ParseTorrentFile {
     public static Map<String, BEncodedValue> parseTorrentFile(List<byte[]> eachPiece, List<String> announces) {
 
         //Parse torrent file
-        // /Users/vivianzhang/Downloads/[SubsPlease] Yuusha, Yamemasu - 05 (720p) [5D2E9073].mkv.torrent
-        // /Users/vivianzhang/dsd-final-project-vivian0420/test.torrent
         File torrentFile = Path.of("/Users/vivianzhang/Downloads/[SubsPlease] Yuusha, Yamemasu - 05 (720p) [5D2E9073].mkv.torrent").toFile();
         FileInputStream inputStream = null;
         Map<String, BEncodedValue> info = null;

@@ -27,16 +27,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static bitTorrent.ConnectToTracker.connectToTracker;
-import static bitTorrent.GetUriList.getUriList;
+import static utility.GetUriList.getUriList;
 import static utility.GetHashValue.getHashValue;
 
 public class ConnectToPeer {
 
     private static final Logger LOGGER = LogManager.getLogger(ConnectToPeer.class.getName());
 
-    public static void connectToPeers(Map<String, Socket> peersSocket, Map<Integer, byte[]> pieceReceived,
-                               Map<String, BitSet> peersHave, Map<String, BEncodedValue> info, List<byte[]> eachPiece,
-                               List<String> announces) throws InvalidBEncodingException {
+    public static void connectToPeers(Map<String, Socket> peersSocket, Map<Integer, byte[]> pieceReceived, Map<String, BitSet> peersHave,
+                                      Map<String, BEncodedValue> info, List<byte[]> eachPiece, List<String> announces) {
 
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
