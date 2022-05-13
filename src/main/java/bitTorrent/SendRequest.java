@@ -44,14 +44,20 @@ public class SendRequest {
                             DataOutputStream request = new DataOutputStream(peersSocket.get(bitSetEntry.getKey()).getOutputStream());
                             List<Integer> indexList = new ArrayList<>();
                             for (int i = 0; i < eachPiece.size(); i++) {  //i -> piece
-                                if (!iHave.get(i)) {
-                                    indexList.add(i);
+                                if ((double)iHave.cardinality() /  eachPiece.size() < 0.95) {
+                                    if (!iHave.get(i) && bitSetEntry.getValue().get(i)) {
+                                        indexList.add(i);
+                                    }
+                                } else {
+                                    if (!iHave.get(i)) {       //&& bitSetEntry.getValue().get(i)
+                                        indexList.add(i);
+                                    }
                                 }
                             }
                             Collections.shuffle(indexList);   //shuffle index list
 
                             for (int i : indexList) {
-                                int pieceLen = 0;
+                                int pieceLen;
                                 if (i != eachPiece.size() - 1) {
                                     pieceLen = info.get("piece length").getInt();
                                 } else {

@@ -135,7 +135,7 @@ public class ConnectToPeer {
                         pieceReceived.put(index, new byte[lastPieceLength]);
                     }
                 }
-                //System.arraycopy(source_arr, sourcePos, dest_arr,destPos, len);
+                /* System.arraycopy(source_arr, sourcePos, dest_arr,destPos, len); */
                 System.arraycopy(block, 0, pieceReceived.get(index), begin, block.length);
             } else if (id == 6) {   //request: <len=0013><id=6><index><begin><length>
                 peerMessage.readInt();

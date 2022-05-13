@@ -28,6 +28,7 @@ public class BitTorrent {
 
         List<String> announces = new ArrayList<>();
         List<byte[]> eachPiece = new ArrayList<>();
+        Map<byte[], Socket> clientSockets = new ConcurrentHashMap<>();
         Map<Integer, byte[]> pieceReceived = new ConcurrentHashMap<>();
         Map<String, BitSet> peersHave = new ConcurrentHashMap<>();
         Map<String, Socket> peersSocket = new ConcurrentHashMap<>();
@@ -37,10 +38,10 @@ public class BitTorrent {
         Files.createDirectories(Path.of("target", String.valueOf(port)));
         RandomAccessFile file = new RandomAccessFile(Path.of("target", String.valueOf(port), info.get("name").getString()).toFile(), "rws");
         buildIHave(info, eachPiece, iHave, port);
-        startService(port, info, iHave, eachPiece);
+        startService(port, info, iHave, clientSockets);
         connectToPeers(peersSocket, pieceReceived, peersHave, info, eachPiece, announces, mode, peerHostName, peerPort);
         sendRequest(iHave, peersHave, peersSocket, info, eachPiece, mode);
-        doChecksum(iHave, file, info, pieceReceived, eachPiece);
+        doChecksum(iHave, file, info, pieceReceived, eachPiece, clientSockets);
     }
 
 

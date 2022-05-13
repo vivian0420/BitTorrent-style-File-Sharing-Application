@@ -19,10 +19,10 @@ import static utility.GetHashValue.getHashValue;
 public class StartServerSocket {
 
     private static final Logger LOGGER = LogManager.getLogger(StartServerSocket.class.getName());
-    private  static final String peerId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+    private static final String myId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
     private static final boolean running = true;
 
-    public static  void startService(int port, Map<String, BEncodedValue> info, BitSet iHave, List<byte[]> eachPiece) {
+    public static  void startService(int port, Map<String, BEncodedValue> info, BitSet iHave, Map<byte[], Socket> clientSockets) {
         byte[] hashValue = getHashValue(info);
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         ServerSocket serverSocket;
@@ -43,7 +43,7 @@ public class StartServerSocket {
                     continue;
                 }
                 executorService.execute(() -> {
-                    HandleRequest.handleRequest(iHave, hashValue, socket, info, peerId, port);
+                    HandleRequest.handleRequest(iHave, hashValue, socket, info, myId, port, clientSockets);
                 });
             }
         }).start();
