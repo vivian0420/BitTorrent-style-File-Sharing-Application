@@ -34,6 +34,7 @@ public class ConnectToPeer {
 
     private static final Logger LOGGER = LogManager.getLogger(ConnectToPeer.class.getName());
 
+    /* Connect to peers: (1)build url (2) connect to tracker (3) get peers' information (4)connect to peers: handshake, handle peers' messages. */
     public static void connectToPeers(Map<String, Socket> peersSocket, Map<Integer, byte[]> pieceReceived, Map<String, BitSet> peersHave,
                                       Map<String, BEncodedValue> info, List<byte[]> eachPiece, List<String> announces, String mode,
                                       String hostName, int port) {
@@ -44,6 +45,9 @@ public class ConnectToPeer {
         connectToPeers.schedule(new TimerTask() {
             @Override
             public void run() {
+                if (BitTorrent.timerCancel) {
+                    connectToPeers.cancel();
+                }
                 String myId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
                 List<URI> uriList;
                 try {
@@ -60,10 +64,8 @@ public class ConnectToPeer {
                 for (InetSocketAddress address : addresses) {
                     executorService.execute(() -> {
                         try {
-                            LOGGER.info("Try to Connect peer");
                             Socket socket = new Socket();
                             socket.connect(address, 5000);
-                            //LOGGER.info("Connect succeed");
 
                             DataInputStream peerMessage = new DataInputStream(socket.getInputStream());
 
@@ -127,8 +129,8 @@ public class ConnectToPeer {
                 int index = peerMessage.readInt();
                 int begin = peerMessage.readInt();
                 byte[] block = peerMessage.readNBytes(len - 9);
-                if (!pieceReceived.containsKey(index)) {    // if the piece isn't the last piece
-                    if (index != eachPiece.size() - 1) {
+                if (!pieceReceived.containsKey(index)) {
+                    if (index != eachPiece.size() - 1) {   // if the piece isn't the last piece
                         pieceReceived.put(index, new byte[info.get("piece length").getInt()]);
                     } else {    // if the piece is the last piece
                         int lastPieceLength = (int) (info.get("length").getLong() - (eachPiece.size() - 1) * info.get("piece length").getInt());
@@ -162,7 +164,7 @@ public class ConnectToPeer {
         LOGGER.info("Sending handshake...");
     }
 
-
+    /* How to calculate ip and port: https://stackoverflow.com/questions/50094674/how-to-parse-ip-and-port-from-http-tracker-response*/
     private static List<InetSocketAddress> getInetSocketAddress(List<byte[]> bodies, String mode) {
         List<InetSocketAddress> addresses = new ArrayList<>();
         try {
@@ -174,9 +176,7 @@ public class ConnectToPeer {
                     out.write(peers);
                 }
             }
-            //out.write(new byte[]{127, 0, 0, 1, 0x1a, (byte) 0xe1});
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-
             while (in.available() > 0) {
                 InetAddress address = InetAddress.getByAddress(new byte[]{in.readByte(), in.readByte(), in.readByte(), in.readByte()});
                 int port1 = in.read();

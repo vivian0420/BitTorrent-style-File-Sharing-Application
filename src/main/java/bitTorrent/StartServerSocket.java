@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.BitSet;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +21,7 @@ public class StartServerSocket {
     private static final String myId = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
     private static final boolean running = true;
 
+    /* Start server socket to handle peers' requests */
     public static  void startService(int port, Map<String, BEncodedValue> info, BitSet iHave, Map<byte[], Socket> clientSockets) {
         byte[] hashValue = getHashValue(info);
         ExecutorService executorService = Executors.newFixedThreadPool(20);

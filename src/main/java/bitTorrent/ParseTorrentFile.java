@@ -16,11 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 
-
 public class ParseTorrentFile {
 
     private static final Logger LOGGER = LogManager.getLogger(ParseTorrentFile.class.getName());
 
+    /* bitTorrent bencode format tool: https://www.nayuki.io/page/bittorrent-bencode-format-tools */
+    /* How to decode a torrent file: https://github.com/adaxi/Bencode */
     public static Map<String, BEncodedValue> parseTorrentFile(List<byte[]> eachPiece, List<String> announces, String torrentFilePath) {
 
         //Parse torrent file

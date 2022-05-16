@@ -20,7 +20,7 @@ public class GetUriList {
         String infoHash = URLEncoder.encode(new String(hashValue, StandardCharsets.ISO_8859_1), StandardCharsets.ISO_8859_1);
 
 
-        //getURI
+        /* getURI: https://wiki.theory.org/BitTorrentSpecification */
         String port = String.valueOf(6881);
         String left = String.valueOf(info.get("length").getLong());
         String downloaded = String.valueOf(0L);

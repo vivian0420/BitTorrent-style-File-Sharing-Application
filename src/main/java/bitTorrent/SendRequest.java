@@ -27,12 +27,11 @@ public class SendRequest {
 
 
     public static void sendRequest(BitSet iHave, Map<String, BitSet> peersHave, Map<String, Socket> peersSocket,
-                                   Map<String, BEncodedValue> info, List<byte[]> eachPiece, String mode) {
+                                   Map<String, BEncodedValue> info, List<byte[]> eachPiece) {
         ExecutorService executorServiceDoRequest = Executors.newFixedThreadPool(30);
         //  do request
         Timer timer = new Timer("Timer");
         TimerTask task = new TimerTask() {
-
             public void run() {
                 if (BitTorrent.timerCancel) {
                     timer.cancel();
@@ -44,7 +43,7 @@ public class SendRequest {
                             DataOutputStream request = new DataOutputStream(peersSocket.get(bitSetEntry.getKey()).getOutputStream());
                             List<Integer> indexList = new ArrayList<>();
                             for (int i = 0; i < eachPiece.size(); i++) {  //i -> piece
-                                if ((double)iHave.cardinality() /  eachPiece.size() < 0.95) {
+                                if ((double)iHave.cardinality() /  eachPiece.size() < 0.98) {
                                     if (!iHave.get(i) && bitSetEntry.getValue().get(i)) {
                                         indexList.add(i);
                                     }
@@ -58,13 +57,14 @@ public class SendRequest {
 
                             for (int i : indexList) {
                                 int pieceLen;
-                                if (i != eachPiece.size() - 1) {
+                                if (i != eachPiece.size() - 1) {       //If the piece isn't the last piece
                                     pieceLen = info.get("piece length").getInt();
-                                } else {
+                                } else {                               //If the piece is the last piece
                                     pieceLen = (int) (info.get("length").getLong() - (eachPiece.size() - 1) * info.get("piece length").getInt());
                                 }
                                 int begin = 0;
                                 //request: <len=0013><id=6><index><begin><length>
+                                // The maximum value of length is 16384 bytes, so a piece may need to be split into multiple blocks.
                                 while (pieceLen > 0) {
                                     request.writeInt(13);
                                     request.write(6);
@@ -83,13 +83,10 @@ public class SendRequest {
                             LOGGER.info("Broken pipe");
                         }
                     });
-
                     try {
                         submit.get(10000, TimeUnit.MILLISECONDS);
                     } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                        submit.cancel(true);                 // Give up this thread if haven't received any data in 6s
-                        //peersHave.remove(bitSetEntry.getKey());
-                        //peersSocket.remove(bitSetEntry.getKey());
+                        submit.cancel(true);                 // Give up this thread if haven't received any data in 10s
                     }
 
                 }

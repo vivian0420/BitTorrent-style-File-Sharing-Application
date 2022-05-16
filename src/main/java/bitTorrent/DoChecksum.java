@@ -27,13 +27,14 @@ public class DoChecksum {
 
     private static final Logger LOGGER = LogManager.getLogger(DoChecksum.class.getName());
 
+    /* Checking checksum, if checksum matched: (1) update iHave. (2) write date into file. (3) send "have" to peers
+    * (4) check if download completed. */
     public static void doChecksum(BitSet iHave, RandomAccessFile file, Map<String, BEncodedValue> info, Map<Integer,
             byte[]> pieceReceived, List<byte[]> eachPiece, Map<byte[], Socket> clientSockets) {
         ExecutorService executorServiceSendHave = Executors.newFixedThreadPool(20);
         Timer timer1 = new Timer("Timer");
         TimerTask task1 = new TimerTask() {
             public void run() {
-                LOGGER.info("pieceReceived's size = " + pieceReceived.size());
                 for (Map.Entry<Integer, byte[]> entry : pieceReceived.entrySet()) {
                     byte[] hash;
                     MessageDigest md;
@@ -43,10 +44,11 @@ public class DoChecksum {
                         if (Arrays.equals(hash, eachPiece.get(entry.getKey()))) {
                             iHave.set(entry.getKey());
                             LOGGER.info("iHave.cardinality() = " + iHave.cardinality());
+                            // check if download completed
                             if (iHave.cardinality() == eachPiece.size()) {
-                                LOGGER.info("Check sum timer cancel.");
                                 timer1.cancel();
                                 BitTorrent.timerCancel = true;
+                                LOGGER.info("Download is completed!!!!!!!!!!!");
                             }
                             file.seek((long) entry.getKey() * info.get("piece length").getInt());
                             file.write(entry.getValue());
@@ -60,7 +62,6 @@ public class DoChecksum {
                                             sendHave.write(4);
                                             sendHave.writeInt(entry.getKey());
                                             sendHave.flush();
-                                            LOGGER.info("sending have to peers>>>>>>>>>>>>>>>>");
                                         } catch (IOException e) {
                                             LOGGER.info("broken pipe.");
                                         }

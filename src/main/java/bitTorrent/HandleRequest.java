@@ -74,11 +74,9 @@ public class HandleRequest {
                 int id = in.read();
 
                 if(id == 6) {
-                    //LOGGER.info("Received request.");
+
                     int index = in.readInt();
-                    //LOGGER.info("Index = " + index);
                     int begin = in.readInt();
-                    //LOGGER.info("Begin = " + begin);
                     int length = in.readInt();
 
                     try(FileInputStream inStream = new FileInputStream(Path.of("target", String.valueOf(port), info.get("name").getString()).toFile())) {
@@ -95,7 +93,6 @@ public class HandleRequest {
                                 out.flush();
                                 LOGGER.info("Send piece.");
                             }
-
                         }
                     }
                 }

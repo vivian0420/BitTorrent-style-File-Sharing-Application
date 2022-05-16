@@ -40,7 +40,7 @@ public class BitTorrent {
         buildIHave(info, eachPiece, iHave, port);
         startService(port, info, iHave, clientSockets);
         connectToPeers(peersSocket, pieceReceived, peersHave, info, eachPiece, announces, mode, peerHostName, peerPort);
-        sendRequest(iHave, peersHave, peersSocket, info, eachPiece, mode);
+        sendRequest(iHave, peersHave, peersSocket, info, eachPiece);
         doChecksum(iHave, file, info, pieceReceived, eachPiece, clientSockets);
     }
 
