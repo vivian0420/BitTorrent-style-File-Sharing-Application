@@ -153,7 +153,7 @@ public class ConnectToPeer {
         }
     }
 
-    private static void doHandshake(Socket socket, Map<String, BEncodedValue> info, String myId) throws IOException {
+    public static void doHandshake(Socket socket, Map<String, BEncodedValue> info, String myId) throws IOException {
         DataOutputStream writeHandshake = new DataOutputStream(socket.getOutputStream());
         writeHandshake.write(19);
         writeHandshake.write("BitTorrent protocol".getBytes());
