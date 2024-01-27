@@ -1,19 +1,19 @@
 # BitTorrent-style file sharing application
 ## Overview
 
-In this project, I will extend Project 1 to support a BitTorrent-style file sharing application. BitTorrent is a communication protocol for P2P(peer to peer) sharing, which allows users to distribute data over the Internet in a decentralized way. 
+In this project, I implemented a BitTorrent-style file sharing application. BitTorrent is a communication protocol for P2P(peer to peer) sharing, which allows users to distribute data over the Internet in a decentralized way. 
 
 The download process of BitTorrent can be roughly divided into 4 steps: **1.** Parse .torrent file. **2.** Request Tracker to get a list of Peers. **3.** Request Peers, download Piece, and check the validity of Piece according to the pieces field. **4.** Assemble Piece, get complete file. 
 
 
-**1.Parse .torrent file:** Torrent file is a bencoded dictionary, containing a bunch of information about files and folders to be distributed. In this project, I am going to assume all the torrent files are in **Single File Mode**, and don't consider the cases of Multiple File Mode.  
-**2.Request Tracker for Peers:**  Connect to tracker by HTTP server to ask the peers' information   
-**3.Request Peers, download Piece:**  I will simplify this step. Only implement handshake, bitfield, request and piece. I am going to ignore have, choke, unchoke,ect.  
-**4.Assemble Piece, get complete file:** Once each piece is correct, we can assemble the pieces to a complete file.
+1. **Parse .torrent file:** Torrent file is a bencoded dictionary, containing a bunch of information about files and folders to be distributed. In this project, I assumed all the torrent files are in Single File Mode, and didn't consider the cases of Multiple File Mode.  
+2. **Request Tracker for Peers:** Connect to tracker by HTTP server to ask the peers' information   
+3. **Request Peers, download Piece:** In this project, I simplified the steps. Only implemented handshake, bitfield, request and piece.  
+4. **Assemble Piece, get complete file:** Once each piece is correct, we can assemble the pieces to a complete file.
 
 In addition, in the BitTorrent protocol, each host acts as both server and client, so except for the download process, a host should be able to handle the communication with other peers. For example, Handshake, Request,ect. 
 
-Another critical piece of BitTorrent is concurrent download/upload. The idea is that, while you're downloading a file, you're also helping to upload it to others who need it. And everyone will be doing the same, so it's one of the reasons why it can be so fast. I will implement this feature in my project as well.
+Another critical piece of BitTorrent is concurrent download/upload. The idea is that, while you're downloading a file, you're also helping to upload it to others who need it. And everyone will be doing the same, so it's one of the reasons why it can be so fast. I implemented this feature in my project as well.
 
 ## Milestones
 
